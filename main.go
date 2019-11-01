@@ -30,11 +30,16 @@ func main() {
 	}
 
 	problems := parseLines(lines)
-	correct := 0
+	// Create a timer so we know when the time has run out
 	t := time.NewTimer(*d)
+	// Create an answer channel so we know if there was a correct answer
 	answerCh := make(chan int)
+	correct := 0
+	// Loop through the problems
 	for i, prob := range problems {
+		// Ask the question
 		fmt.Printf("Problem #%d: %s\n", i+1, prob.q)
+		// Create a goroutine that communicates answers through the answerCh
 		go func() {
 			var answer string
 			fmt.Scanf("%s\n", &answer)
@@ -45,8 +50,10 @@ func main() {
 			}
 		}()
 		select {
+		// if the timer finishes, end the game
 		case <-t.C:
 			exit(fmt.Sprintf("You got %d out of %d correct", correct, len(problems)))
+		// if we get an answer back, update the amount of correct we have
 		case message := <-answerCh:
 			correct += message
 		}
