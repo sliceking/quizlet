@@ -12,7 +12,7 @@ import (
 func main() {
 	// Define flags with defaults
 	f := flag.String("csv", "problems.csv", "the csv with quiz problems - problems.csv")
-	d := flag.Duration("time", time.Second*5, "How long should the quiz be - 5 seconds")
+	d := flag.Int("time", 5, "How long should the quiz be - 5 seconds")
 	// Load flag values
 	flag.Parse()
 
@@ -31,7 +31,7 @@ func main() {
 
 	problems := parseLines(lines)
 	// Create a timer so we know when the time has run out
-	t := time.NewTimer(*d)
+	t := time.NewTimer(time.Second * time.Duration(*d))
 	// Create an answer channel so we know if there was a correct answer
 	answerCh := make(chan int)
 	correct := 0
