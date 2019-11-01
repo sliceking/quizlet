@@ -13,6 +13,9 @@ Create a csv file with this format:
     problem,answer
 
 Now run quizlet on the file to be quizzed
-`quizlet -csv=<file> -time=<seconds>`
+
+    quizlet -csv=<file> -time=<seconds>
+
 or from inside the quizlet dir
-`go run main.go -csv=<file> -time=<seconds>`
+
+    go run main.go -csv=<file> -time=<seconds>
