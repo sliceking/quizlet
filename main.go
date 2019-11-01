@@ -6,12 +6,13 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 )
 
 func main() {
 	// Define flags with defaults
 	f := flag.String("csv", "problems.csv", "the csv with quiz problems - problems.csv")
-	// d := flag.Duration("time", time.Second*5, "How long should the quiz be - 5 seconds")
+	d := flag.Duration("time", time.Second*5, "How long should the quiz be - 5 seconds")
 	// Load flag values
 	flag.Parse()
 
@@ -30,12 +31,24 @@ func main() {
 
 	problems := parseLines(lines)
 	correct := 0
+	t := time.NewTimer(*d)
+	answerCh := make(chan int)
 	for i, prob := range problems {
 		fmt.Printf("Problem #%d: %s\n", i+1, prob.q)
-		var answer string
-		fmt.Scanf("%s\n", &answer)
-		if answer == prob.a {
-			correct++
+		go func() {
+			var answer string
+			fmt.Scanf("%s\n", &answer)
+			if answer == prob.a {
+				answerCh <- 1
+			} else {
+				answerCh <- 0
+			}
+		}()
+		select {
+		case <-t.C:
+			exit(fmt.Sprintf("You got %d out of %d correct", correct, len(problems)))
+		case message := <-answerCh:
+			correct += message
 		}
 	}
 	fmt.Printf("You got %d out of %d correct", correct, len(problems))
